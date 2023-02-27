@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="height=device-height, width=device-width, initial-scale=1.0, minimum-scale=1.0">
+    <meta name="generator" content="Hugo 0.109.0">
+    <meta name="generator" content="Relearn 5.3.3+tip">
+    <meta name="description" content=" Walkthrough of the Aviatrix Controller installation in AWS">
+    <meta name="author" content="Nicolas Michel">
+    <title> Deploy a Controller - Manual - My Cloud Networking, Automation and Triathlon Blog</title>
+    <link href="/images/favicon.png?1673312925" rel="icon" type="image/png">
+    <!-- https://github.com/filamentgroup/loadCSS/blob/master/README.md#how-to-use -->
+    <link href="/css/fontawesome-all.min.css?1673312925" rel="stylesheet" media="print" onload="this.media='all';this.onload=null;"><noscript><link href="/css/fontawesome-all.min.css?1673312925" rel="stylesheet"></noscript>
+    <link href="/css/featherlight.min.css?1673312925" rel="stylesheet" media="print" onload="this.media='all';this.onload=null;"><noscript><link href="/css/featherlight.min.css?1673312925" rel="stylesheet"></noscript>
+    <link href="/css/auto-complete.css?1673312925" rel="stylesheet" media="print" onload="this.media='all';this.onload=null;"><noscript><link href="/css/auto-complete.css?1673312925" rel="stylesheet"></noscript>
+    <link href="/css/perfect-scrollbar.min.css?1673312925" rel="stylesheet">
+    <link href="/css/nucleus.css?1673312925" rel="stylesheet">
+    <link href="/css/fonts.css?1673312925" rel="stylesheet" media="print" onload="this.media='all';this.onload=null;"><noscript><link href="/css/fonts.css?1673312925" rel="stylesheet"></noscript>
+    <link href="/css/theme.css?1673312925" rel="stylesheet">
+    <link href="/css/theme-blue.css?1673312925" rel="stylesheet" id="variant-style">
+    <link href="/css/ie.css?1673312925" rel="stylesheet">
+    <link href="/css/variant.css?1673312925" rel="stylesheet">
+    <link href="/css/print.css?1673312925" rel="stylesheet" media="print">
+    <script src="/js/variant.js?1673312925"></script>
+    <script>
+      // hack to let hugo tell us how to get to the root when using relativeURLs, it needs to be called *url= for it to do its magic:
+      // https://github.com/gohugoio/hugo/blob/145b3fcce35fbac25c7033c91c1b7ae6d1179da8/transform/urlreplacers/absurlreplacer.go#L72
+      var index_url="/index.json";
+      var root_url="/";
+      var baseUri=root_url.replace(/\/$/, '');
+      // translations
+      window.T_Copy_to_clipboard = 'Copy to clipboard';
+      window.T_Copied_to_clipboard = 'Copied to clipboard!';
+      window.T_Copy_link_to_clipboard = 'Copy link to clipboard';
+      window.T_Link_copied_to_clipboard = 'Copied link to clipboard!';
+      // some further base stuff
+      var baseUriFull='http:\/\/blog.vpackets.net/';
+      window.variants && variants.init( [ 'blue' ] );
+    </script>
+    <script src="/js/jquery.min.js?1673312925" defer></script>
+  </head>
+  <body class="mobile-support default" data-url="/aviatrix/controller/manual-deployment/">
+    <div id="body" class="default-animation">
+      <div id="sidebar-overlay"></div>
+      <div id="toc-overlay"></div>
+      <nav id="topbar" class="highlightable">
+        <div>
+          <div id="breadcrumbs">
+            <span id="sidebar-toggle-span">
+              <a href="#" id="sidebar-toggle" title='Menu (CTRL+ALT+n)'><i class="fas fa-bars fa-fw"></i></a>
+            </span>
+            <span class="links">
+               Deploy a Controller - Manual
+            </span>
+          </div>
+        </div>
+      </nav>
+      <main id="body-inner" class="highlightable default" tabindex="-1">
+        <div class="flex-block-wrapper">
+          <div id="head-tags">
+          </div>
+          <article class="default">
+<h1> Deploy a Controller - Manual</h1>
+
+<p>In every modern SDDC solution, the first step is to deploy a controller. The aviatrix controller can be deployed in any Cloud service provider but this example will focus on deploying the Aviatrix controller on AWS. You have multiple ways to deploy an Aviatrix controller, you could either deploy it manually (the sole purpose of this post) or automate it using <a href="https://docs.aviatrix.com/StartUpGuides/aws_getting_started_guide.html">AWS cloudformation</a> or Terraform (more on this one in a later post)</p>
+<p>It is usually recommended to install the controller in a VPC that is dedicated to general infrastructure resources as described previous or here</p>
+<p>Once you have the VPC and all its mandatory network constructs needed to provide internet connectivity, you can deploy a VPC</p>
+<p>If you remember what we did in the previous article we will just install the Aviatrix Controller into that VPC.</p>
+<p>The very simple topology will look like this <img src="/images/aviatrix/controller/manual-deployment/Fig1-avxcontroller.png" alt="AVX Controller">.</p>
+<p>We will have install the custom <a href="https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/AMIs.html">AMI</a> for the Aviatrix Controller in the VPC and we want to have an <a href="https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/elastic-ip-addresses-eip.html">elastic IP address</a> assigned to this EC2 instance. That way, if you need to reboot or stop the controller at any point, the IP address assigned will stay the same and you will not have to change your DNS record.</p>
+<p>The first step is to deploy the Aviatrix EC2 instance using the AMI marketplace in the EC2 console as show below:
+<img src="/images/aviatrix/controller/manual-deployment/Fig2-EC2launch.png" alt="AVX ControllerEC2">.</p>
+<p>Once you are in the AMI marketplace, you can search for a variety of images that are available for you. Just type &ldquo;Aviatrix&rdquo; and you will have the choise to deploy different solutions (controller or copilot.)
+As I have my own license already, I am choosing the &ldquo;Aviatrix Secure Networking Platform - BYOL&rdquo; option. (Do not hesitate to <a href="https://aviatrix.com/#live-chat">reach to Aviatrix</a> to understand the different licensing options).</p>
+<p><img src="/images/aviatrix/controller/manual-deployment/Fig3-AVXami.png" alt="AVX ControllerAMI">.</p>
+<p>Once you select the right option for you, you will have to configure your EC2 instance.
+I gave it a name and an instance type (t3.large) and a previously created key-pair.</p>
+<p><img src="/images/aviatrix/controller/manual-deployment/Fig4-EC2Config01.png" alt="AVX ControllerEC2Config">.</p>
+<p>The networking config is critical as it will obviously provide the connectivity to the internet and other VPCs.
+You need to select the VPC previously created and make sure to select a public subnet as well.
+Make sure to not &ldquo;auto-assign a public IP&rdquo; to this EC2 instance, we will assign an elastic IP one. If you assign one now, the IP address will change if you stop the controller.
+Also, verify that the right security group is selected, it should authorize inbound SSH and TLS traffic from your management IP address (Home or on premise Data center for example).</p>
+<p><img src="/images/aviatrix/controller/manual-deployment/Fig5-EC2Config02.png" alt="AVX ControllerEC2ConfigNetwork">.</p>
+<p>Once we are done with the networking config, we can launch the controller and then assign an Elastic IP address:</p>
+<p><img src="/images/aviatrix/controller/manual-deployment/Fig6-ElasticIP.png" alt="AVX ControllerEC2EIP">.</p>
+<p>The process to assign an Elastic IP is very straightfoward, you just have to claim an IP address that you assign to the right VPC and configure that IP address to the EC2 instance of your choice (The AVX controller in our case).</p>
+<p><img src="/images/aviatrix/controller/manual-deployment/Fig7-ElasticIPassigned02.png" alt="AVX ControllerEC2EIP">.</p>
+<p>Once you have assigned the IP address, you should be able to access it using HTTPS (Make sure to login using the following credential, the username is &ldquo;admin&rdquo; and the password is the private IP address assigned by AWS within your VPC/Subnet):</p>
+<p><img src="/images/aviatrix/controller/manual-deployment/Fig8-test.png" alt="AVX Controller login">.</p>
+<p>Then, the controller will ask for your email to receive the initial notification and it will upgrade itself to the latest version.</p>
+<p><img src="/images/aviatrix/controller/manual-deployment/Fig9-email.png" alt="AVX Controller Email">.
+<img src="/images/aviatrix/controller/manual-deployment/Fig11-upgrade.png" alt="AVX Controller upgrade">.</p>
+<p>Now that your Aviatrix controller is deployed, you are almost ready to fly. You just need to make sure that your AWS (or other CSP) account is configured into the Aviatrix controller to orchestrate your CSP native constructs and deploy the Aviatrix gateways.</p>
+<p><img src="/images/aviatrix/controller/manual-deployment/Fig12-welcome.png" alt="AVX Controller Welcome">.</p>
+<p>Click on the AWS icon and fill the fields with your CSP account information. you can follow this <a href="https://docs.aviatrix.com/StartUpGuides/aws_getting_started_guide.html">documentation</a> or even better this entire <a href="https://docs.aviatrix.com/HowTos/onboarding_faq.html">chapter</a></p>
+<p><img src="/images/aviatrix/controller/manual-deployment/Fig13-AWSaccount.png" alt="AVX Controller AWS Setup">.</p>
+<p>It is possible that your Aviatrix controller EC2 instance is missing some IAM roles at the begining ! Make sure to fix this using this <a href="https://docs.aviatrix.com/HowTos/onboarding_faq.html#why-do-i-need-an-aws-account-credential">documentation</a> or you will end up getting this error message:</p>
+<p><img src="/images/aviatrix/controller/manual-deployment/Fig13-IAMrole.png" alt="AVX Controller AWS Setup">.</p>
+<p>Modify the IAM role into your EC2 instance:</p>
+<p><img src="/images/aviatrix/controller/manual-deployment/Fig14-IAMroleassigned.png" alt="AVX Controller AWS Setup">.</p>
+<p><img src="/images/aviatrix/controller/manual-deployment/Fig15-IAMroleassignedec2.png" alt="AVX Controller AWS Setup">.</p>
+<p>Now you should be able to perform your first solo flight using the Aviatrix solution on AWS. Enjoy and have a relaxing flight :) .</p>
+
+            <footer class="footline">
+            </footer>
+          </article>
+        </div>
+      </main>
+    </div>
+    <aside id="sidebar" class="default-animation">
+      <div id="header-wrapper" class="default-animation">
+        <div id="header" class="default-animation">
+ 
+
+
+ <!DOCTYPE html>
+ <html>
+    <head>
+    </head>
+    <body>
+       <a href="http://blog.vpackets.net/">
+          <img alt="logo" src="/images/logo/vpackets-logo-white.png">
+       </a>
+    </body>
+ </html>
+        </div>
+        <div class="searchbox default-animation">
+          <label class="a11y-only" for="search-by">Search</label>
+          <i class="fas fa-search"></i>
+          <input data-search-input id="search-by" type="search" placeholder="Search...">
+          <span data-search-clear=""><i class="fas fa-times"></i></span>
+        </div>
+        <script>
+          var contentLangs=['en'];
+        </script>
+        <script src="/js/auto-complete.js?1673312925" defer></script>
+        <script src="/js/lunr.min.js?1673312925" defer></script>
+        <script src="/js/lunr.stemmer.support.min.js?1673312925" defer></script>
+        <script src="/js/lunr.multi.min.js?1673312925" defer></script>
+        <script src="/js/lunr.en.min.js?1673312925" defer></script>
+        <script src="/js/search.js?1673312925" defer></script>
+      </div>
+      <div id="content-wrapper" class="highlightable">
+        <ul class="topics">
+          <li data-nav-id="/aviatrix/" class="dd-item parent alwaysopen"><a href="/aviatrix/"><b>NET - Aviatrix</b> </a><ul id="subsections-e9c1f91d28a54160f285f33fe2da5aa4">
+          <li data-nav-id="/aviatrix/controller/" class="dd-item parent alwaysopen"><a href="/aviatrix/controller/">Controller</a><ul id="subsections-e93ffb5cc47e3ca6f70f1291165bddc0">
+          <li data-nav-id="/aviatrix/controller/manual-deployment/" class="dd-item active"><a href="/aviatrix/controller/manual-deployment/"> Deploy a Controller - Manual</a></li>
+          <li data-nav-id="/aviatrix/controller/automation-deployment/" class="dd-item"><a href="/aviatrix/controller/automation-deployment/"> Deploy a Controller - Terraform</a></li></ul></li></ul></li>
+          <li data-nav-id="/aws/" class="dd-item alwaysopen"><a href="/aws/"><b>AWS</b> </a><ul id="subsections-db8ac1d891f3a128ac6dc30cdc5237df">
+          <li data-nav-id="/aws/vpc/" class="dd-item alwaysopen"><a href="/aws/vpc/">VPC</a><ul id="subsections-eedb28a2d43a03290b8827bc6e7cbe62">
+          <li data-nav-id="/aws/vpc/manual-vpc/" class="dd-item"><a href="/aws/vpc/manual-vpc/">Create a VPC - Manual</a></li>
+          <li data-nav-id="/aws/vpc/automation-vpc/" class="dd-item"><a href="/aws/vpc/automation-vpc/">Create a VPC - Terraform</a></li></ul></li></ul></li>
+        </ul>
+        <div class="footermargin footerLangSwitch footerVariantSwitch footerVisitedLinks footerFooter showFooter"></div>
+        <hr class="default-animation footerLangSwitch footerVariantSwitch footerVisitedLinks footerFooter showFooter">
+        <div id="prefooter" class="footerLangSwitch footerVariantSwitch footerVisitedLinks">
+          <ul>
+            <li id="select-language-container" class="footerLangSwitch">
+              <div class="padding select-container">
+                <i class="fas fa-language fa-fw"></i>
+                <span>&nbsp;</span>
+                <div class="select-style">
+                  <label class="a11y-only" for="select-language">Language</label>
+                  <select id="select-language" onchange="location = baseUri + this.value;">
+                  </select>
+                </div>
+                <div class="select-clear"></div>
+              </div>
+            </li>
+            <li id="select-variant-container" class="footerVariantSwitch">
+              <div class="padding select-container">
+                <i class="fas fa-paint-brush fa-fw"></i>
+                <span>&nbsp;</span>
+                <div class="select-style">
+                  <label class="a11y-only" for="select-variant">Theme</label>
+                  <select id="select-variant" onchange="window.variants && variants.changeVariant( this.value );">
+                    <option id="blue" value="blue" selected>Blue</option>
+                  </select>
+                </div>
+                <div class="select-clear"></div>
+              </div>
+              <script>window.variants && variants.markSelectedVariant();</script>
+            </li>
+            <li class="footerVisitedLinks"><a class="padding" onclick="clearHistory();"><i class="fas fa-history fa-fw"></i> Clear History</a></li>
+          </ul>
+        </div>
+        <div id="footer" class="footerFooter showFooter">
+	    <p>Built with <a href="https://github.com/McShelby/hugo-theme-relearn" title="love"><i class="fas fa-heart"></i></a> by <a href="https://gohugo.io/">Hugo</a></p>
+        </div>
+      </div>
+    </aside>
+    <script src="/js/clipboard.min.js?1673312925" defer></script>
+    <script src="/js/perfect-scrollbar.min.js?1673312925" defer></script>
+    <script src="/js/featherlight.min.js?1673312925" defer></script>
+    <script>
+      function useMathJax( config ){
+        if( !Object.assign ){
+          
+          return;
+        }
+        window.MathJax = Object.assign( window.MathJax || {}, {
+          loader: {
+            load: ['[tex]/mhchem']
+          },
+          startup: {
+            elements: [
+              '.math'
+            ]
+          },
+          tex: {
+            inlineMath: [
+              ['$', '$'], 
+              ['\\(', '\\)']
+            ]
+          },
+          options: {
+            enableMenu: false 
+          }
+        }, config );
+      }
+      useMathJax( JSON.parse("{}") );
+    </script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="/js/jquery.svg.pan.zoom.js?1673312925" defer></script>
+    <script src="https://unpkg.com/mermaid/dist/mermaid.min.js" defer></script>
+    <script>
+      window.themeUseMermaid = JSON.parse("{ \"theme\": \"default\" }");
+    </script>
+    <script src="https://unpkg.com/rapidoc/dist/rapidoc-min.js" defer></script>
+    <script>
+      window.themeUseSwagger = JSON.parse("{ \"theme\": \"light\" }");
+    </script>
+    <script src="/js/theme.js?1673312925" defer></script>
+  </body>
+</html>

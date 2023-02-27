@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>SSH on My Cloud Networking, Automation and Triathlon Blog</title>
+    <link>http://blog.vpackets.net/security/ssh/</link>
+    <description>Recent content in SSH on My Cloud Networking, Automation and Triathlon Blog</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language><atom:link href="http://blog.vpackets.net/security/ssh/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>SSH To Cisco devices</title>
+      <link>http://blog.vpackets.net/security/ssh/ssh-to-cisco-isr/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      <guid>http://blog.vpackets.net/security/ssh/ssh-to-cisco-isr/</guid>
+      <description>It looks like MacOS Ventura (13.2.1 in my case) uses OPenSSH_9.0p1 and LibreSSL 3.3.6. There are plenty of article here and there on the web but I wanted to do my version as well to document it.
+$ sw_vers ProductName:	macOS ProductVersion:	13.2.1 BuildVersion:	22D68 $ /usr/bin/ssh -V OpenSSH_9.0p1, LibreSSL 3.3.6 When you try to connect to a legacy Cisco IOS you might have some issues during the SSH key exchange.</description>
+    </item>
+  </channel>
+</rss>

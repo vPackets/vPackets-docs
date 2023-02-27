@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Certification - SAA C03 on My Cloud Networking, Automation and Triathlon Blog</title>
+    <link>http://blog.vpackets.net/aws/certification-saa_c03/</link>
+    <description>Recent content in Certification - SAA C03 on My Cloud Networking, Automation and Triathlon Blog</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Tue, 23 Aug 2022 14:25:17 -0500</lastBuildDate><atom:link href="http://blog.vpackets.net/aws/certification-saa_c03/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Introduction</title>
+      <link>http://blog.vpackets.net/aws/certification-saa_c03/introduction/</link>
+      <pubDate>Tue, 23 Aug 2022 14:25:17 -0500</pubDate>
+      <guid>http://blog.vpackets.net/aws/certification-saa_c03/introduction/</guid>
+      <description>This blogpost will link all the resources that I am using to pass this certification:
+Blueprint AWS SAA C03 Blueprint. Whitepapers and documentation AWS - Well Architected Framework. AWS - Service Overview. Training and Resources (order or priority) Adrian Cantrill - AWS SAA C03 Training. Andrew Brown - AWS Cloud Project Bootcamp. A Cloud Guru - AWS SAA C03 Training. Projects and Code AWS - BGP Infrastructure and 3 tier app - TBD.</description>
+    </item>
+  </channel>
+</rss>
